@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FORGE – Meme Coin Launchpad on Arc</title>
+  <meta name="description" content="The first meme coin launchpad on Arc ecosystem. Launch fast, launch loud." />
+  <meta property="og:title" content="FORGE – Meme Coin Launchpad on Arc" />
+  <meta property="og:description" content="The first meme coin launchpad on Arc ecosystem. Launch fast, launch loud." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --lime: #76EE00;
+      --lime-d: #5CC400;
+      --forest: #1B4D10;
+      --black: #0A0F07;
+      --card: #111A09;
+      --muted: #2E4A1F;
+      --orange: #F55C1B;
+      --white: #F5FFED;
+      --gray: #8BAF72;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Stars background ── */
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(1px 1px at 15% 20%, #ffffff55 0%, transparent 100%),
+        radial-gradient(1px 1px at 40% 60%, #76EE0044 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 15%, #ffffff33 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 85% 75%, #76EE0033 0%, transparent 100%),
+        radial-gradient(1px 1px at 55% 90%, #ffffff22 0%, transparent 100%);
+    }
+
+    /* Animated floating particles */
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      animation: float linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(110vh) scale(0);
+        opacity: 0;
+      }
+
+      5% {
+        opacity: 1;
+      }
+
+      95% {
+        opacity: 0.6;
+      }
+
+      100% {
+        transform: translateY(-10vh) scale(1);
+        opacity: 0;
+      }
+    }
+
+    /* ── Layout ── */
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px 60px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 60px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-logo .logo-icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .nav-logo .brand {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--lime);
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--lime);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      max-width: 720px;
+      margin-bottom: 56px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--muted);
+      border: 1px solid var(--forest);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      color: var(--lime);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--lime);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: .4;
+        transform: scale(1.4);
+      }
+    }
+
+    /* Logo F in hero */
+    .hero-logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 32px;
+      filter: drop-shadow(0 0 32px #76EE0055);
+      animation: logoFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes logoFloat {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(40px, 7vw, 76px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    h1 .accent {
+      color: var(--lime);
+    }
+
+    h1 .accent-o {
+      color: var(--orange);
+    }
+
+    .hero-sub {
+      font-size: clamp(15px, 2.5vw, 19px);
+      color: var(--gray);
+      max-width: 520px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+
+    /* ── Waitlist form ── */
+    .waitlist-box {
+      background: var(--card);
+      border: 1px solid var(--muted);
+      border-radius: 20px;
+      padding: 40px 36px;
+      max-width: 480px;
+      width: 100%;
+      margin: 0 auto;
+      box-shadow: 0 0 60px #76EE0015, 0 4px 40px #00000066;
+    }
+
+    .waitlist-box h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+
+    .waitlist-box p {
+      font-size: 14px;
+      color: var(--gray);
+      margin-bottom: 24px;
+    }
+
+    .input-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+      pointer-events: none;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      background: var(--black);
+      border: 1.5px solid var(--muted);
+      border-radius: 12px;
+      padding: 14px 14px 14px 44px;
+      font-size: 15px;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .input-wrap input::placeholder {
+      color: var(--muted);
+    }
+
+    .input-wrap input:focus {
+      border-color: var(--lime);
+      box-shadow: 0 0 0 3px #76EE0020;
+    }
+
+    .btn-join {
+      width: 100%;
+      background: var(--lime);
+      color: var(--forest);
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      cursor: pointer;
+      letter-spacing: .03em;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-join:hover {
+      background: var(--lime-d);
+      box-shadow: 0 0 28px #76EE0055;
+      transform: translateY(-1px);
+    }
+
+    .btn-join:active {
+      transform: translateY(1px);
+    }
+
+    .btn-join .rocket-icon {
+      font-size: 18px;
+    }
+
+    .btn-join .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--forest);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .btn-join.loading .btn-text {
+      display: none;
+    }
+
+    .btn-join.loading .spinner {
+      display: block;
+    }
+
+    /* success state */
+    .success-msg {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+      padding: 16px 0;
+    }
+
+    .success-msg .check {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #76EE0020;
+      border: 2px solid var(--lime);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .success-msg strong {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      color: var(--lime);
+    }
+
+    .success-msg span {
+      font-size: 14px;
+      color: var(--gray);
+    }
+
+    .error-msg {
+      color: #ff6b6b;
+      font-size: 13px;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .counter-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--gray);
+    }
+
+    .counter-row .count {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: var(--lime);
+      font-size: 15px;
+    }
+
+    /* ── Features strip ── */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      max-width: 900px;
+      width: 100%;
+      margin-top: 64px;
+    }
+
+    .feat-card {
+      background: var(--card);
+      border: 1px solid var(--muted);
+      border-radius: 16px;
+      padding: 24px 20px;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .feat-card:hover {
+      border-color: var(--lime);
+      transform: translateY(-3px);
+    }
+
+    .feat-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .feat-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+
+    .feat-desc {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 80px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .social-links a {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: color .2s;
+    }
+
+    .social-links a:hover {
+      color: var(--lime);
+    }
+
+    /* ── Glow orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(80px);
+      opacity: .18;
+    }
+
+    .orb-1 {
+      width: 500px;
+      height: 500px;
+      background: var(--lime);
+      top: -150px;
+      left: -150px;
+    }
+
+    .orb-2 {
+      width: 400px;
+      height: 400px;
+      background: var(--orange);
+      bottom: -100px;
+      right: -100px;
+    }
+
+    @media (max-width: 500px) {
+      .waitlist-box {
+        padding: 28px 20px;
+      }
+
+      nav {
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="stars"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- Floating particles injected by JS -->
+
+  <div class="wrapper">
+
+    <!-- Nav -->
+    <nav>
+      <div class="nav-logo">
+        <!-- Inline SVG replicating the F logo mark -->
+        <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100" height="100" rx="18" fill="#76EE00" />
+          <rect width="100" height="100" rx="18" fill="none" stroke="#1B4D10" stroke-width="6" />
+          <!-- Letter F shape -->
+          <path d="M22 15 H78 V30 H38 V45 H70 V60 H38 V85 H22 Z" fill="#1B4D10" />
+          <!-- Rocket -->
+          <ellipse cx="52" cy="60" rx="7" ry="11" fill="#F55C1B" />
+          <polygon points="52,46 45,60 59,60" fill="#F55C1B" />
+          <polygon points="45,68 41,76 52,71" fill="#F55C1B" />
+          <polygon points="59,68 63,76 52,71" fill="#F55C1B" />
+          <circle cx="52" cy="59" r="3" fill="white" opacity=".8" />
+          <!-- Flame -->
+          <ellipse cx="52" cy="75" rx="4" ry="6" fill="#FFB800" opacity=".9" />
+          <ellipse cx="52" cy="78" rx="2.5" ry="4" fill="#FF6B00" opacity=".8" />
+        </svg>
+        <span class="brand">FORGE</span>
+      </div>
+      <div class="nav-links">
+        <a href="https://x.com" target="_blank">𝕏 Twitter</a>
+        <a href="#waitlist">Join Waitlist</a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Now in private beta · Arc Ecosystem
+      </div>
+
+      <!-- Hero F logo -->
+      <svg class="hero-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="200" rx="36" fill="#76EE00" />
+        <rect width="200" height="200" rx="36" fill="none" stroke="#1B4D10" stroke-width="10" />
+        <path d="M44 30 H156 V62 H76 V92 H140 V124 H76 V170 H44 Z" fill="#1B4D10" />
+        <!-- Stars scattered -->
+        <text x="120" y="50" font-size="14" fill="#FFB800" opacity=".8">★</text>
+        <text x="148" y="80" font-size="10" fill="#76EE00" opacity=".6">✦</text>
+        <text x="130" y="105" font-size="8" fill="#ffffff" opacity=".5">•</text>
+        <!-- Rocket -->
+        <ellipse cx="102" cy="125" rx="14" ry="22" fill="#F55C1B" />
+        <polygon points="102,94 86,122 118,122" fill="#F55C1B" />
+        <polygon points="86,138 78,156 102,148" fill="#F55C1B" />
+        <polygon points="118,138 126,156 102,148" fill="#F55C1B" />
+        <circle cx="102" cy="123" r="6" fill="white" opacity=".85" />
+        <!-- Flame -->
+        <ellipse cx="102" cy="153" rx="8" ry="12" fill="#FFB800" />
+        <ellipse cx="102" cy="158" rx="5" ry="8" fill="#FF6B00" />
+        <circle cx="98" cy="162" r="2" fill="#76EE00" opacity=".7" />
+        <circle cx="106" cy="165" r="1.5" fill="#76EE00" opacity=".6" />
+      </svg>
+
+      <h1>Launch your <span class="accent">meme coin</span><br />on <span class="accent-o">Arc</span></h1>
+
+      <p class="hero-sub">
+        FORGE is the first meme coin launchpad built natively on the Arc ecosystem.
+        No code needed. Just vibes, community, and a rocket ship.
+      </p>
+    </section>
+
+    <!-- Waitlist card -->
+    <div class="waitlist-box" id="waitlist">
+      <h2>🚀 Get early access</h2>
+      <p>Join the waitlist. We'll hand-pick early launchers and send you an invite.</p>
+
+      <div id="form-area">
+        <div class="input-row">
+          <div class="input-wrap">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,12 2,6" />
+            </svg>
+            <input type="email" id="email-input" placeholder="your@gmail.com" autocomplete="email" />
+          </div>
+          <div class="error-msg" id="error-msg">⚠ Please enter a valid email address.</div>
+          <button class="btn-join" id="join-btn" onclick="submitWaitlist()">
+            <span class="btn-text"><span class="rocket-icon">🚀</span> Join the Waitlist</span>
+            <span class="spinner"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="success-msg" id="success-msg">
+        <div class="check">✅</div>
+        <strong>You're on the list!</strong>
+        <span>We'll reach out with your invite soon. Stay tuned on 𝕏.</span>
+      </div>
+
+      <div class="counter-row" id="counter-row">
+        <span class="count" id="counter">—</span>
+        <span>people already waiting</span>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="features">
+      <div class="feat-card">
+        <div class="feat-icon">⚡</div>
+        <div class="feat-title">Click Launch</div>
+        <div class="feat-desc">Deploy your meme coin in seconds. No dev skills, no wallets nightmare — just launch.
+        </div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🌌</div>
+        <div class="feat-title">Native on Arc</div>
+        <div class="feat-desc">Built deep inside the Arc ecosystem. Full composability with Arc DeFi protocols.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔥</div>
+        <div class="feat-title">Fair Launch Mechanics</div>
+        <div class="feat-desc">Anti-rug bonding curves. No presales. No VCs. Community owns the supply.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🎯</div>
+        <div class="feat-title">Virality Tools</div>
+        <div class="feat-desc">Shareable launch pages, meme templates, and leaderboards baked right in.</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="social-links">
+        <a href="https://x.com/forgefunme" target="_blank">𝕏 Twitter</a>
+        <a href="#">Docs</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+      </div>
+      <span>© 2026 FORGE · Meme Coin Launchpad on Arc</span>
+    </footer>
+
+  </div>
+
+  <script>
+    // ── Particle rain ──
+    (function spawnParticles() {
+      const colors = ['#76EE00', '#5CC400', '#FFB800', '#F55C1B', '#ffffff'];
+      for (let i = 0; i < 28; i++) {
+        const el = document.createElement('div');
+        el.className = 'particle';
+        const size = Math.random() * 5 + 2;
+        el.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random() * 100}vw;
+        background:${colors[Math.floor(Math.random() * colors.length)]};
+        animation-duration:${Math.random() * 18 + 10}s;
+        animation-delay:${Math.random() * 15}s;
+        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+      `;
+        document.body.appendChild(el);
+      }
+    })();
+
+    // ── Fetch counter ──
+    async function fetchCounter() {
+      try {
+        const res = await fetch('api.php?action=count');
+        const data = await res.json();
+        if (data.count !== undefined) {
+          document.getElementById('counter').textContent = Number(data.count).toLocaleString();
+        }
+      } catch { document.getElementById('counter').textContent = '–'; }
+    }
+    fetchCounter();
+
+    // ── Submit ──
+    async function submitWaitlist() {
+      const input = document.getElementById('email-input');
+      const btn = document.getElementById('join-btn');
+      const err = document.getElementById('error-msg');
+      const email = input.value.trim();
+
+      err.style.display = 'none';
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        err.style.display = 'block'; return;
+      }
+
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('api.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'join', email })
+        });
+        const data = await res.json();
+
+        if (data.success || data.already) {
+          document.getElementById('form-area').style.display = 'none';
+          document.getElementById('counter-row').style.display = 'none';
+          const s = document.getElementById('success-msg');
+          s.style.display = 'flex';
+        } else {
+          err.textContent = data.message || 'Something went wrong. Try again.';
+          err.style.display = 'block';
+          btn.classList.remove('loading');
+          btn.disabled = false;
+        }
+      } catch {
+        err.textContent = 'Network error. Please try again.';
+        err.style.display = 'block';
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
+    }
+
+    // Enter key
+    document.getElementById('email-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitWaitlist();
+    });
+  </script>
+</body>
+
+</html>
