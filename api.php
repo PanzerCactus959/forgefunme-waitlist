@@ -9,55 +9,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Lấy email từ JSON (Frontend gửi JSON)
+// Lấy dữ liệu từ frontend (gửi JSON)
 $data = json_decode(file_get_contents('php://input'), true);
 $email = trim(strtolower($data['email'] ?? ''));
 
-if (empty($email)) {
-    echo json_encode(["success" => false, "message" => "Email không được để trống"]);
+if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    echo json_encode(["success" => false, "message" => "Email không hợp lệ"]);
     exit;
 }
 
 try {
-    // ==================== KẾT NỐI SUPABASE ====================
     $pdo = new PDO(
         "pgsql:host=db.qytfioinfkwjeclsddhj.supabase.co;port=5432;dbname=postgres",
         "postgres",
         "Quocthaidz123@",
         [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_TIMEOUT => 10
+            PDO::ATTR_TIMEOUT => 8
         ]
     );
 
-    // Kiểm tra email đã tồn tại chưa
+    // Kiểm tra email đã tồn tại
     $check = $pdo->prepare("SELECT id FROM waitlist WHERE email = ?");
     $check->execute([$email]);
-    
+
     if ($check->rowCount() > 0) {
         echo json_encode(["success" => true, "already" => true, "message" => "Email đã đăng ký"]);
         exit;
     }
 
-    // Insert
-    $stmt = $pdo->prepare("INSERT INTO waitlist (email, ip) VALUES (?, ?)");
-    $stmt->execute([$email, $_SERVER['REMOTE_ADDR'] ?? 'unknown']);
+    // Insert dữ liệu
+    $stmt = $pdo->prepare("
+        INSERT INTO waitlist (email, ip, invited) 
+        VALUES (?, ?, false)
+    ");
+    
+    $stmt->execute([
+        $email, 
+        $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+    ]);
 
     echo json_encode([
         "success" => true,
-        "message" => "Đăng ký thành công!"
+        "message" => "Đăng ký thành công! 🎉"
     ]);
 
 } catch (PDOException $e) {
-    error_log("Supabase Error: " . $e->getMessage());
+    error_log("Database Error: " . $e->getMessage());
     echo json_encode([
         "success" => false,
-        "message" => "Lỗi kết nối database. Vui lòng thử lại."
+        "message" => "Lỗi kết nối. Vui lòng thử lại sau."
     ]);
 } catch (Exception $e) {
     echo json_encode([
         "success" => false,
-        "message" => "Lỗi: " . $e->getMessage()
+        "message" => "Có lỗi xảy ra."
     ]);
 }
 ?>
