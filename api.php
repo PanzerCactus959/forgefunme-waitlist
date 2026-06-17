@@ -1,44 +1,35 @@
 <?php
 /**
- * FORGE Waitlist API
- * Endpoints:
- *   POST /api.php  { "action": "join", "email": "user@gmail.com" }
- *   GET  /api.php?action=count
- *
- * Setup:
- *  1. Import schema below into your MySQL database
- *  2. Fill in DB credentials in the CONFIG section
- *  3. Upload index.html + api.php to the same folder on your server
+ * FORGE Waitlist API - Supabase Version
  */
 
-// ─────────────────────────────────────────
-//  CONFIG  ← edit these
-// ─────────────────────────────────────────
-define('DB_HOST', 'localhost');
-define('DB_PORT', '3306');
-define('DB_NAME', 'forge_waitlist');   // your database name
-define('DB_USER', 'root');             // your MySQL username
-define('DB_PASS', '');                 // your MySQL password
+define('DB_HOST', 'db.qytfioinfkwjeclsddhj.supabase.co');
+define('DB_PORT', '5432');
+define('DB_NAME', 'postgres');
+define('DB_USER', 'postgres');
+define('DB_PASS', 'Quocthaidz123@');
 
-// Allowed origins (add your domain here)
+// Allowed origins
 define('ALLOWED_ORIGIN', '*');
-// ─────────────────────────────────────────
 
+// ─────────────────────────────────────────
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: ' . ALLOWED_ORIGIN);
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204); exit;
+    http_response_code(204); 
+    exit;
 }
 
 // ── DB connection ──
 function getDB(): PDO {
     static $pdo = null;
     if ($pdo) return $pdo;
-    $dsn = sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
-        DB_HOST, DB_PORT, DB_NAME);
+
+    $dsn = "pgsql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";options='--client_encoding=utf8'";
+    
     $pdo = new PDO($dsn, DB_USER, DB_PASS, [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -50,13 +41,13 @@ function getDB(): PDO {
 function ensureTable(): void {
     getDB()->exec("
         CREATE TABLE IF NOT EXISTS waitlist (
-            id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            email      VARCHAR(255) NOT NULL UNIQUE,
-            ip         VARCHAR(64)  DEFAULT NULL,
-            created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            invited    TINYINT(1)   NOT NULL DEFAULT 0,
-            notes      TEXT         DEFAULT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            id          SERIAL PRIMARY KEY,
+            email       VARCHAR(255) UNIQUE NOT NULL,
+            ip          VARCHAR(64),
+            created_at  TIMESTAMPTZ DEFAULT NOW(),
+            invited     BOOLEAN DEFAULT FALSE,
+            notes       TEXT
+        );
     ");
 }
 
@@ -76,7 +67,7 @@ function getClientIP(): string {
     return 'unknown';
 }
 
-// ── Route ──
+// ── Main Logic ──
 try {
     ensureTable();
     $db = getDB();
@@ -102,21 +93,15 @@ try {
         if ($action === 'join') {
             $email = trim(strtolower($body['email'] ?? ''));
 
-            // Validate
             if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 json_out(['success' => false, 'message' => 'Invalid email address.'], 422);
             }
 
-            // Optional: only allow Gmail
-            // if (!str_ends_with($email, '@gmail.com')) {
-            //     json_out(['success' => false, 'message' => 'Only Gmail addresses accepted.'], 422);
-            // }
-
             // Check duplicate
             $check = $db->prepare('SELECT id FROM waitlist WHERE email = ?');
             $check->execute([$email]);
+            
             if ($check->fetch()) {
-                // Already on list – return success silently (don't leak info)
                 json_out(['success' => true, 'already' => true,
                           'message' => 'You are already on the waitlist!']);
             }
@@ -136,7 +121,7 @@ try {
     json_out(['error' => 'Method not allowed'], 405);
 
 } catch (Throwable $e) {
-    // Never leak DB details in production
     error_log('FORGE API error: ' . $e->getMessage());
     json_out(['success' => false, 'message' => 'Server error. Please try again later.'], 500);
 }
+?>
