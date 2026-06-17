@@ -610,36 +610,36 @@
 
     <!-- Waitlist card -->
     <!-- <div class="waitlist-box" id="waitlist"> -->
-      <!-- <h2>🚀 Get early access</h2> -->
-      <!-- <p>Join the waitlist. We'll hand-pick early launchers and send you an invite.</p> -->
+    <!-- <h2>🚀 Get early access</h2> -->
+    <!-- <p>Join the waitlist. We'll hand-pick early launchers and send you an invite.</p> -->
 
-      <!-- <div id="form-area"> -->
-        <!-- <div class="input-row"> -->
-          <!-- <div class="input-wrap"> -->
-            <!-- <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"> -->
-              <!-- <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /> -->
-              <!-- <polyline points="22,6 12,12 2,6" /> -->
-            <!-- </svg> -->
-            <!-- <input type="email" id="email-input" placeholder="your@gmail.com" autocomplete="email" /> -->
-          <!-- </div> -->
-          <!-- <div class="error-msg" id="error-msg">⚠ Please enter a valid email address.</div> -->
-          <!-- <button class="btn-join" id="join-btn" onclick="submitWaitlist()"> -->
-            <!-- <span class="btn-text"><span class="rocket-icon">🚀</span> Join the Waitlist</span> -->
-            <!-- <span class="spinner"></span> -->
-          <!-- </button> -->
-        <!-- </div> -->
-      <!-- </div> -->
+    <!-- <div id="form-area"> -->
+    <!-- <div class="input-row"> -->
+    <!-- <div class="input-wrap"> -->
+    <!-- <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"> -->
+    <!-- <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /> -->
+    <!-- <polyline points="22,6 12,12 2,6" /> -->
+    <!-- </svg> -->
+    <!-- <input type="email" id="email-input" placeholder="your@gmail.com" autocomplete="email" /> -->
+    <!-- </div> -->
+    <!-- <div class="error-msg" id="error-msg">⚠ Please enter a valid email address.</div> -->
+    <!-- <button class="btn-join" id="join-btn" onclick="submitWaitlist()"> -->
+    <!-- <span class="btn-text"><span class="rocket-icon">🚀</span> Join the Waitlist</span> -->
+    <!-- <span class="spinner"></span> -->
+    <!-- </button> -->
+    <!-- </div> -->
+    <!-- </div> -->
 
-      <!-- <div class="success-msg" id="success-msg"> -->
-        <div class="check">Comming Soon</div>
-        <!-- <strong>You're on the list!</strong> -->
-        <!-- <span>We'll reach out with your invite soon. Stay tuned on 𝕏.</span> -->
-      <!-- </div> -->
+    <!-- <div class="success-msg" id="success-msg"> -->
+    <div class="check">Comming Soon</div>
+    <!-- <strong>You're on the list!</strong> -->
+    <!-- <span>We'll reach out with your invite soon. Stay tuned on 𝕏.</span> -->
+    <!-- </div> -->
 
-      <!-- <div class="counter-row" id="counter-row"> -->
-        <!-- <span class="count" id="counter">—</span> -->
-        <!-- <span>people already waiting</span> -->
-      <!-- </div> -->
+    <!-- <div class="counter-row" id="counter-row"> -->
+    <!-- <span class="count" id="counter">—</span> -->
+    <!-- <span>people already waiting</span> -->
+    <!-- </div> -->
     <!-- </div> -->
 
     <!-- Features -->
@@ -713,49 +713,47 @@
     fetchCounter();
 
     // ── Submit ──
-async function submitWaitlist() {
-  const input = document.getElementById('email-input');
-  const btn = document.getElementById('join-btn');
-  const err = document.getElementById('error-msg');
-  const email = input.value.trim();
+    async function submitWaitlist() {
+      const input = document.getElementById('email-input');
+      const btn = document.getElementById('join-btn');
+      const err = document.getElementById('error-msg');
+      const email = input.value.trim();
 
-  err.style.display = 'none';
+      err.style.display = 'none';
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        err.style.display = 'block'; return;
+      }
 
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    err.style.display = 'block';
-    return;
-  }
+      btn.classList.add('loading');
+      btn.disabled = true;
 
-  btn.classList.add('loading');
-  btn.disabled = true;
+      try {
+        const res = await fetch('api.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'join', email })
+        });
+        const data = await res.json();
 
-  try {
-    const res = await fetch('/api.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'join', email })
-    });
-
-    const data = await res.json();
-
-    if (data.success || data.already) {
-      document.getElementById('form-area').style.display = 'none';
-      document.getElementById('counter-row').style.display = 'none';
-      const s = document.getElementById('success-msg');
-      s.style.display = 'flex';
-    } else {
-      err.textContent = data.message || 'Something went wrong. Try again.';
-      err.style.display = 'block';
-      btn.classList.remove('loading');
-      btn.disabled = false;
+        if (data.success || data.already) {
+          document.getElementById('form-area').style.display = 'none';
+          document.getElementById('counter-row').style.display = 'none';
+          const s = document.getElementById('success-msg');
+          s.style.display = 'flex';
+        } else {
+          err.textContent = data.message || 'Something went wrong. Try again.';
+          err.style.display = 'block';
+          btn.classList.remove('loading');
+          btn.disabled = false;
+        }
+      } catch {
+        err.textContent = 'Network error. Please try again.';
+        err.style.display = 'block';
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
     }
-  } catch (e) {
-    err.textContent = 'Network error. Please try again.';
-    err.style.display = 'block';
-    btn.classList.remove('loading');
-    btn.disabled = false;
-  }
-}
+
 
     // Enter key
     document.getElementById('email-input').addEventListener('keydown', e => {
