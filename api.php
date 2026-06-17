@@ -20,15 +20,14 @@ try {
         ]
     );
 
-    // === XỬ LÝ COUNTER ===
-    if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'count') {
+    // Counter
+    if (isset($_GET['action']) && $_GET['action'] === 'count') {
         $stmt = $pdo->query("SELECT COUNT(*) as count FROM waitlist");
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        echo json_encode(["count" => (int)$result['count']]);
+        echo json_encode(["count" => (int)$stmt->fetchColumn()]);
         exit;
     }
 
-    // === XỬ LÝ ĐĂNG KÝ (POST) ===
+    // Join Waitlist
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $input = json_decode(file_get_contents('php://input'), true);
         $email = trim(strtolower($input['email'] ?? ''));
@@ -38,7 +37,6 @@ try {
             exit;
         }
 
-        // Kiểm tra email tồn tại
         $check = $pdo->prepare("SELECT id FROM waitlist WHERE email = ?");
         $check->execute([$email]);
 
@@ -47,21 +45,13 @@ try {
             exit;
         }
 
-        // Insert
-        $stmt = $pdo->prepare("
-            INSERT INTO waitlist (email, ip, invited) 
-            VALUES (?, ?, false)
-        ");
+        $stmt = $pdo->prepare("INSERT INTO waitlist (email, ip, invited) VALUES (?, ?, false)");
         $stmt->execute([$email, $_SERVER['REMOTE_ADDR'] ?? 'unknown']);
 
-        echo json_encode([
-            "success" => true,
-            "message" => "Đăng ký thành công!"
-        ]);
+        echo json_encode(["success" => true, "message" => "Đăng ký thành công!"]);
         exit;
     }
 
-    // Nếu không phải GET count hoặc POST
     echo json_encode(["success" => false, "message" => "Yêu cầu không hợp lệ"]);
 
 } catch (PDOException $e) {
@@ -69,7 +59,6 @@ try {
     echo json_encode([
         "success" => false,
         "message" => "Lỗi kết nối database. Vui lòng thử lại."
-        // ,"debug" => $e->getMessage()   // Bỏ comment dòng này nếu cần debug
     ]);
 } catch (Exception $e) {
     echo json_encode(["success" => false, "message" => "Lỗi hệ thống"]);

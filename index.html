@@ -703,7 +703,7 @@
     // ── Fetch counter ──
     async function fetchCounter() {
       try {
-        const res = await fetch('api.php?action=count');
+        const res = await fetch('/api.php?action=count');
         const data = await res.json();
         if (data.count !== undefined) {
           document.getElementById('counter').textContent = Number(data.count).toLocaleString();
@@ -713,46 +713,49 @@
     fetchCounter();
 
     // ── Submit ──
-    async function submitWaitlist() {
-      const input = document.getElementById('email-input');
-      const btn = document.getElementById('join-btn');
-      const err = document.getElementById('error-msg');
-      const email = input.value.trim();
+async function submitWaitlist() {
+  const input = document.getElementById('email-input');
+  const btn = document.getElementById('join-btn');
+  const err = document.getElementById('error-msg');
+  const email = input.value.trim();
 
-      err.style.display = 'none';
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        err.style.display = 'block'; return;
-      }
+  err.style.display = 'none';
 
-      btn.classList.add('loading');
-      btn.disabled = true;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    err.style.display = 'block';
+    return;
+  }
 
-      try {
-        const res = await fetch('api.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'join', email })
-        });
-        const data = await res.json();
+  btn.classList.add('loading');
+  btn.disabled = true;
 
-        if (data.success || data.already) {
-          document.getElementById('form-area').style.display = 'none';
-          document.getElementById('counter-row').style.display = 'none';
-          const s = document.getElementById('success-msg');
-          s.style.display = 'flex';
-        } else {
-          err.textContent = data.message || 'Something went wrong. Try again.';
-          err.style.display = 'block';
-          btn.classList.remove('loading');
-          btn.disabled = false;
-        }
-      } catch {
-        err.textContent = 'Network error. Please try again.';
-        err.style.display = 'block';
-        btn.classList.remove('loading');
-        btn.disabled = false;
-      }
+  try {
+    const res = await fetch('/api.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'join', email })
+    });
+
+    const data = await res.json();
+
+    if (data.success || data.already) {
+      document.getElementById('form-area').style.display = 'none';
+      document.getElementById('counter-row').style.display = 'none';
+      const s = document.getElementById('success-msg');
+      s.style.display = 'flex';
+    } else {
+      err.textContent = data.message || 'Something went wrong. Try again.';
+      err.style.display = 'block';
+      btn.classList.remove('loading');
+      btn.disabled = false;
     }
+  } catch (e) {
+    err.textContent = 'Network error. Please try again.';
+    err.style.display = 'block';
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
 
     // Enter key
     document.getElementById('email-input').addEventListener('keydown', e => {
@@ -760,5 +763,3 @@
     });
   </script>
 </body>
-
-</html>
